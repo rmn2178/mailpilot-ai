@@ -15,7 +15,9 @@ let connection: IORedis | null = null;
 export function getRedisConnection(): IORedis {
   if (connection) return connection;
   const env = loadEnv();
-  const redisUrl = env.REDIS_URL ?? "redis://localhost:6379";
+  // Explicit runtime guard — satisfies TypeScript even if REDIS_URL is typed
+  // as optional in the schema, and gives a clear error in misconfigured envs.
+  const redisUrl: string = env.REDIS_URL ?? "redis://localhost:6379";
   connection = new IORedis(redisUrl, {
     maxRetriesPerRequest: null, // required by BullMQ
     enableReadyCheck: true,
