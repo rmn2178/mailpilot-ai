@@ -1,0 +1,38 @@
+{
+  "name": "mailpilot-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MailPilot AI — production-oriented AI email generation, review, approval and Gmail delivery platform.",
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "dev:web": "pnpm --filter @mailpilot/web dev",
+    "dev:worker": "pnpm --filter @mailpilot/worker dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check-env": "tsx scripts/check-env.ts",
+    "seed-prompts": "tsx scripts/seed-prompts.ts",
+    "verify-deployment": "tsx scripts/verify-deployment.ts",
+    "db:migrate": "supabase db push",
+    "build:web": "pnpm --filter @mailpilot/web build",
+    "start:web": "pnpm --filter @mailpilot/web start",
+    "start:worker": "pnpm --filter @mailpilot/worker start"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.7.4",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.2"
+  },
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "dependencies": {
+    "server-only": "^0.0.1"
+  }
+}

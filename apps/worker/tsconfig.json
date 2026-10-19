@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "paths": {
+      "@mailpilot/shared": ["../../packages/shared/src/index.ts"],
+      "@mailpilot/server-core": ["../../packages/server-core/src/index.ts"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "../../packages/shared/src/**/*",
+    "../../packages/server-core/src/**/*"
+  ]
+}

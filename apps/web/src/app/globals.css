@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F8F7F4;
+  --panel: #FFFFFF;
+  --ink: #262626;
+  --ink-muted: #77736D;
+  --line: #E7E3DC;
+  --brand: #6261A8;
+  --info: #5A7A92;
+  --success: #5E8A6B;
+  --warn: #B98C3E;
+  --danger: #A95757;
+}
+
+html.dark {
+  --bg: #1F1E1B;
+  --panel: #26241F;
+  --ink: #ECEAE4;
+  --ink-muted: #9C968C;
+  --line: #38352E;
+  --brand: #8B8AC4;
+  --info: #7FA0B8;
+  --success: #7FA88C;
+  --warn: #D2A565;
+  --danger: #C97C7C;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-feature-settings: "ss01", "cv11";
+}
+
+@layer components {
+  .panel {
+    @apply bg-bg-panel border border-line rounded-md shadow-soft;
+  }
+  .panel-pad {
+    @apply p-4;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md
+           border border-line bg-bg-panel hover:bg-bg-subtle
+           transition-colors focus:outline-none focus:ring-2 focus:ring-brand/40;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white border-brand hover:bg-brand-hover;
+  }
+  .btn-ghost {
+    @apply btn border-transparent bg-transparent hover:bg-bg-subtle;
+  }
+  .input {
+    @apply w-full px-3 py-1.5 text-sm rounded-md border border-line
+           bg-bg-panel focus:outline-none focus:ring-2 focus:ring-brand/30
+           placeholder:text-ink-muted/60;
+  }
+  .label {
+    @apply text-xs font-medium text-ink-muted uppercase tracking-wide;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border;
+  }
+  .pill-info { @apply pill border-info/30 text-info bg-info-subtle; }
+  .pill-success { @apply pill border-success/30 text-success bg-success-subtle; }
+  .pill-warn { @apply pill border-warn/30 text-warn bg-warn-subtle; }
+  .pill-danger { @apply pill border-danger/30 text-danger bg-danger-subtle; }
+}

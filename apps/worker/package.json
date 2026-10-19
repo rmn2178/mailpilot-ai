@@ -1,0 +1,22 @@
+{
+  "name": "@mailpilot/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mailpilot/server-core": "workspace:*",
+    "@mailpilot/shared": "workspace:*",
+    "bullmq": "^5.13.0",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "@types/node": "^22.7.4"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "@mailpilot/server-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env.ts",
+    "./db": "./src/db.ts",
+    "./storage": "./src/storage.ts",
+    "./audit": "./src/audit.ts",
+    "./ai/*": "./src/ai/*.ts",
+    "./gmail": "./src/gmail/index.ts",
+    "./imports": "./src/imports/index.ts",
+    "./documents": "./src/documents/index.ts",
+    "./workflow": "./src/workflow/index.ts",
+    "./validation": "./src/validation/index.ts",
+    "./credentials": "./src/credentials/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mailpilot/shared": "workspace:*",
+    "@supabase/supabase-js": "^2.45.4",
+    "@google/generative-ai": "^0.21.0",
+    "bullmq": "^5.13.0",
+    "exceljs": "^4.4.0",
+    "ioredis": "^5.4.1",
+    "mime-types": "^2.1.35",
+    "papaparse": "^5.4.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.4",
+    "@types/papaparse": "^5.3.14",
+    "typescript": "^5.6.2"
+  }
+}
