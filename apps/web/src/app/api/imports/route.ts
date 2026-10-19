@@ -49,15 +49,6 @@ export async function POST(req: Request) {
     }).select("id").single();
     if (error) throw new Error(error.message);
 
-    // Enqueue a parse job — the worker does the parsing. Idempotent on import id.
-    const { enqueueIdempotent, QUEUE_NAMES } = await import("@mailpilot/server-core");
-    await enqueueIdempotent(
-      QUEUE_NAMES.imports,
-      "parse",
-      { importId: importRow.id },
-      `parse-${importRow.id}`,
-    );
-
     await audit({
       actor_id: user.id,
       action: "import.upload",
@@ -67,6 +58,24 @@ export async function POST(req: Request) {
       ticket_id: null,
       metadata: { filename: file.name, size: bytes.byteLength },
     });
+
+    // Enqueue a parse job — fire and forget so the serverless function returns
+    // immediately. The worker picks it up from Redis. If Redis is unavailable
+    // the import row stays in "uploaded" status and the worker's recovery sweep
+    // will re-enqueue it on next startup.
+    void (async () => {
+      try {
+        const { enqueueIdempotent, QUEUE_NAMES } = await import("@mailpilot/server-core");
+        await enqueueIdempotent(
+          QUEUE_NAMES.imports,
+          "parse",
+          { importId: importRow.id },
+          `parse-${importRow.id}`,
+        );
+      } catch (e) {
+        console.error("[imports] enqueue failed (worker will recover):", (e as Error).message);
+      }
+    })();
 
     return ok({ id: importRow.id });
   } catch (e) {

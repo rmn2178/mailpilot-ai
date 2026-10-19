@@ -16,25 +16,14 @@ export async function POST(
     const sb = getServiceSupabase();
     await sb.from("campaigns").update({ status: "active", updated_at: new Date().toISOString() }).eq("id", campaignId);
 
-    // Enqueue every queued ticket for analysis. The workflow orchestrator
-    // (worker side) is the single source of truth for subsequent stage
-    // advancement — analyze.processor.ts will call orchestrate() to chain
-    // to generate → humanize → reviews → qa → quality_gate → approval.
     const { data: tickets } = await sb
       .from("tickets")
       .select("id")
       .eq("campaign_id", campaignId)
       .eq("current_state", "queued");
-    let enqueued = 0;
-    for (const t of tickets ?? []) {
-      await enqueueIdempotent(
-        QUEUE_NAMES.analysis,
-        "analyze",
-        { ticketId: t.id },
-        `analyze-${t.id}`,
-      );
-      enqueued += 1;
-    }
+
+    const ticketIds = (tickets ?? []).map((t) => t.id);
+    const enqueued = ticketIds.length;
 
     await sb.from("campaign_pause_events").insert({
       campaign_id: campaignId,
@@ -50,6 +39,25 @@ export async function POST(
       ticket_id: null,
       metadata: { enqueued },
     });
+
+    // Fire and forget — enqueue after returning so the serverless function
+    // doesn't block or timeout on Redis. Worker's recovery sweep handles
+    // any tickets missed if Redis is temporarily unavailable.
+    void (async () => {
+      try {
+        for (const ticketId of ticketIds) {
+          await enqueueIdempotent(
+            QUEUE_NAMES.analysis,
+            "analyze",
+            { ticketId },
+            `analyze-${ticketId}`,
+          );
+        }
+      } catch (e) {
+        console.error("[start] enqueue failed (worker will recover):", (e as Error).message);
+      }
+    })();
+
     return ok({ started: true, enqueued });
   } catch (e) {
     return failInternal((e as Error).message);
