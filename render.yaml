@@ -1,0 +1,70 @@
+services:
+  - type: worker
+    name: mailpilot-worker
+    runtime: node
+    rootDir: .
+    buildCommand: pnpm install --frozen-lockfile
+    startCommand: pnpm --filter @mailpilot/worker start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: mailpilot-private
+      - key: REDIS_URL
+        sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
+      - key: GEMINI_API_KEY_1
+        sync: false
+      - key: GEMINI_API_KEY_2
+        sync: false
+      - key: GEMINI_API_KEY_3
+        sync: false
+      - key: GEMINI_API_KEY_4
+        sync: false
+      - key: XAI_API_KEY_1
+        sync: false
+      - key: XAI_API_KEY_2
+        sync: false
+      - key: XAI_API_KEY_3
+        sync: false
+      - key: XAI_API_KEY_4
+        sync: false
+      - key: GEMINI_ANALYZE_MODEL
+        value: gemini-1.5-pro
+      - key: GEMINI_GENERATE_MODEL
+        value: gemini-1.5-pro
+      - key: GEMINI_QA_STRUCTURE_MODEL
+        value: gemini-1.5-flash
+      - key: GEMINI_QA_PERSONALIZATION_MODEL
+        value: gemini-1.5-flash
+      - key: GROK_DEFENSIBILITY_MODEL
+        value: grok-2-latest
+      - key: GROK_HUMAN_TONE_MODEL
+        value: grok-2-latest
+      - key: GROK_CONTENT_FIT_MODEL
+        value: grok-2-latest
+      - key: GROK_DELIVERY_HYGIENE_MODEL
+        value: grok-2-latest
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        sync: false
+      - key: WORKER_CONCURRENCY
+        value: "4"
+      - key: MAX_REVISION_CYCLES
+        value: "3"
+      - key: MAX_JOB_ATTEMPTS
+        value: "5"
+      - key: DEFAULT_TIMEZONE
+        value: Asia/Kolkata
