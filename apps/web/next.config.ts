@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Vercel deployment build
 const config: NextConfig = {
   reactStrictMode: true,
 
