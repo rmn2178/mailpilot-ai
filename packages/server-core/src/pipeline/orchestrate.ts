@@ -34,6 +34,8 @@ export async function getNextJobs(ticketId: string): Promise<PipelineJob[]> {
   switch (state) {
     case "queued":
       return [{ job: "analyze", ticketId }];
+    case "analyzing":
+      return [{ job: "analyze", ticketId }];
     case "drafting":
       return [{ job: "generate", ticketId }];
     case "humanizing":

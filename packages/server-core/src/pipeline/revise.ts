@@ -41,7 +41,13 @@ export async function runRevise(ticketId: string): Promise<void> {
   const userPrompt = JSON.stringify({ instruction: "Revise the email based on the consolidated findings.", analysis_brief: ticket.analysis_brief, current_subject: version.subject, current_body_plain: version.body_plain, failed_reviewers: agg.failed_reviewers, findings: (reviews ?? []).flatMap((r) => (r as AiReview).issues ?? []), campaign_settings: settings?.writing });
 
   const started = Date.now();
-  const response = await dispatch({ slot: "gemini_generate", systemPrompt, userPrompt, temperature: 0.4 });
+  let response;
+  try {
+    response = await dispatch({ slot: "gemini_generate", systemPrompt, userPrompt, temperature: 0.4 });
+  } catch (e) {
+    await transitionTicket({ ticket_id: ticketId, from: "revising", to: "needs_attention", actor_id: null, reason: `Revise failed: ${(e as Error).message}` });
+    throw e;
+  }
   await recordUsage({ campaign_id: ticket.campaign_id, ticket_id: ticketId, slot: "gemini_generate", provider: "gemini", model_id: response.model_id, tokens_in: response.usage?.tokens_in ?? 0, tokens_out: response.usage?.tokens_out ?? 0, duration_ms: Date.now() - started, cost_estimate_usd: estimateCost(response.model_id, response.usage?.tokens_in ?? 0, response.usage?.tokens_out ?? 0) });
 
   let parsed: { subject?: string; body_plain?: string; body_html?: string | null } | null = null;

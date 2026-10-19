@@ -34,7 +34,7 @@ export async function POST(
     } else if (ticket.current_state === "needs_attention") {
       await transitionTicket({ ticket_id: ticketId, from: "needs_attention", to: "revising", actor_id: user.id, reason });
     } else {
-      await transitionTicket({ ticket_id: ticketId, from: "quality_gate", to: "revising", actor_id: user.id, reason });
+      await transitionTicket({ ticket_id: ticketId, from: ticket.current_state as import("@mailpilot/shared").TicketState, to: "revising", actor_id: user.id, reason });
     }
 
     await sb.from("tickets").update({ approval_status: "revision_requested", updated_at: new Date().toISOString() }).eq("id", ticketId);

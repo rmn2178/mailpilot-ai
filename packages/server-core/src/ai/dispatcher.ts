@@ -15,7 +15,7 @@ export async function dispatch(
   credentialSlot: 1 | 2 | 3 | 4 = 1,
 ): Promise<ProviderResponse> {
   const slot = req.slot;
-  if (slot.startsWith("gemini_")) {
+  if (slot.startsWith("gemini_") || slot === "humanizer") {
     return callGemini(req, credentialSlot);
   }
   if (slot.startsWith("grok_")) {

@@ -134,6 +134,7 @@ export function geminiModelForSlot(slot: string): string {
     case "gemini_analyze":
       return env.GEMINI_ANALYZE_MODEL;
     case "gemini_generate":
+    case "humanizer":
       return env.GEMINI_GENERATE_MODEL;
     case "gemini_qa_structure":
       return env.GEMINI_QA_STRUCTURE_MODEL;
@@ -143,6 +144,7 @@ export function geminiModelForSlot(slot: string): string {
       throw new Error(`No Gemini model mapping for slot ${slot}`);
   }
 }
+
 
 export function grokModelForSlot(slot: string): string {
   const env = loadEnv();
