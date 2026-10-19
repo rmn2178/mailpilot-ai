@@ -22,7 +22,10 @@ const EnvSchema = z.object({
   // DATABASE_URL is optional at boot — the worker needs it for direct psql,
   // but the web app uses the supabase-js client which only needs the URL.
   DATABASE_URL: z.string().optional(),
-  REDIS_URL: z.string().url().default("redis://localhost:6379"),
+  // REDIS_URL is only needed by the worker. The web app enqueues jobs via
+  // BullMQ but Vercel serverless functions don't maintain persistent Redis
+  // connections — the worker runs separately.
+  REDIS_URL: z.string().url().default("redis://localhost:6379").optional(),
 
   // Credentials are optional at boot (some slots may be unconfigured) but
   // validated when their slot is invoked.
@@ -46,9 +49,9 @@ const EnvSchema = z.object({
   GROK_CONTENT_FIT_MODEL: z.string().default("grok-2-latest"),
   GROK_DELIVERY_HYGIENE_MODEL: z.string().default("grok-2-latest"),
 
-  GOOGLE_OAUTH_CLIENT_ID: z.string().min(1),
-  GOOGLE_OAUTH_CLIENT_SECRET: z.string().min(1),
-  GOOGLE_OAUTH_REDIRECT_URI: z.string().url(),
+  GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
+  GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_OAUTH_REDIRECT_URI: z.string().url().optional(),
 
   TOKEN_ENCRYPTION_KEY: z.string().min(32),
 
