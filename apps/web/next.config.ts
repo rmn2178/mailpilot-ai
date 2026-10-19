@@ -16,6 +16,8 @@ const config: NextConfig = {
     "exceljs",
     "papaparse",
     "@google/generative-ai",
+    "pdf-parse",
+    "mammoth",
   ],
 
   // Security: never expose server-only env to the browser bundle.

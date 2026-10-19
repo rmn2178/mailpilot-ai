@@ -40,6 +40,9 @@ export function makeOAuthState(userId: string): OAuthState {
 
 export function buildAuthorizeUrl(state: string): string {
   const env = requireServerEnv();
+  if (!env.GOOGLE_OAUTH_CLIENT_ID || !env.GOOGLE_OAUTH_REDIRECT_URI) {
+    throw new Error("GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_REDIRECT_URI must be set to use Gmail OAuth.");
+  }
   const params = new URLSearchParams({
     client_id: env.GOOGLE_OAUTH_CLIENT_ID,
     redirect_uri: env.GOOGLE_OAUTH_REDIRECT_URI,
@@ -61,6 +64,9 @@ export interface TokenSet {
 
 export async function exchangeCodeForTokens(code: string): Promise<TokenSet> {
   const env = requireServerEnv();
+  if (!env.GOOGLE_OAUTH_CLIENT_ID || !env.GOOGLE_OAUTH_CLIENT_SECRET || !env.GOOGLE_OAUTH_REDIRECT_URI) {
+    throw new Error("Google OAuth credentials are not configured.");
+  }
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -149,6 +155,9 @@ export async function getValidAccessToken(userId: string): Promise<string | null
 
 async function refreshAccessToken(refreshToken: string): Promise<TokenSet> {
   const env = requireServerEnv();
+  if (!env.GOOGLE_OAUTH_CLIENT_ID || !env.GOOGLE_OAUTH_CLIENT_SECRET) {
+    throw new Error("Google OAuth credentials are not configured.");
+  }
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
