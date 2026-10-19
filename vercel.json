@@ -1,5 +1,6 @@
 {
-  "installCommand": "cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm --filter @mailpilot/web build",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @mailpilot/web build",
+  "outputDirectory": "apps/web/.next"
 }
