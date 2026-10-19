@@ -2,6 +2,5 @@
   "buildCommand": "pnpm --filter @mailpilot/web build",
   "installCommand": "pnpm install",
   "outputDirectory": "apps/web/.next",
-  "framework": "nextjs",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- apps/web packages"
+  "framework": "nextjs"
 }
