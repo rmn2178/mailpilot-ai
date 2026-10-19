@@ -25,7 +25,7 @@ const EnvSchema = z.object({
   // REDIS_URL is only needed by the worker. The web app enqueues jobs via
   // BullMQ but Vercel serverless functions don't maintain persistent Redis
   // connections — the worker runs separately.
-  REDIS_URL: z.string().url().default("redis://localhost:6379").optional(),
+  REDIS_URL: z.string().url().default("redis://localhost:6379"),
 
   // Credentials are optional at boot (some slots may be unconfigured) but
   // validated when their slot is invoked.
