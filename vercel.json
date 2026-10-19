@@ -2,6 +2,5 @@
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @mailpilot/web build",
-  "outputDirectory": "apps/web/.next",
-  "rootDirectory": "."
+  "outputDirectory": "apps/web/.next"
 }
