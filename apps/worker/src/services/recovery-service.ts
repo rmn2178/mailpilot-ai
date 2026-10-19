@@ -1,4 +1,5 @@
-import { getServiceSupabase, enqueueIdempotent, QUEUE_NAMES, transitionTicket } from "@mailpilot/server-core";
+import { getServiceSupabase, transitionTicket } from "@mailpilot/server-core";
+import { enqueueIdempotent, QUEUE_NAMES } from "@mailpilot/server-core/queues";
 
 /**
  * Recovery sweep — runs on worker startup. Reconciles tickets that were left

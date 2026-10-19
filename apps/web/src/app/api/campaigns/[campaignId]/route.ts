@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
-import { getServiceSupabase, assertCampaignOwnedBy, audit, enqueueIdempotent, QUEUE_NAMES } from "@mailpilot/server-core";
+import { NextRequest } from "next/server";
+import { getServiceSupabase, assertCampaignOwnedBy, audit } from "@mailpilot/server-core";
 import { requireAuth } from "@/lib/auth";
-import { ok, failInternal, fail, failForbidden, failNotFound } from "@/lib/api/responses";
+import { ok, failInternal, fail, failNotFound } from "@/lib/api/responses";
 import { CampaignSettingsSchema } from "@mailpilot/shared";
 import { z } from "zod";
+import { triggerPipeline } from "@/lib/pipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   ctx: { params: Promise<{ campaignId: string }> },
 ) {
   try {
@@ -66,7 +67,7 @@ export async function PATCH(
       if (parsed.data.status === "active") {
         const { data: queuedTickets } = await sb.from("tickets").select("id").eq("campaign_id", campaignId).eq("current_state", "queued");
         for (const t of queuedTickets ?? []) {
-          await enqueueIdempotent(QUEUE_NAMES.analysis, "analyze", { ticketId: t.id }, `analyze-${t.id}`);
+          triggerPipeline({ job: "analyze", ticketId: t.id }, req.url);
         }
       }
     }

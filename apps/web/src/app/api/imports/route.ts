@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import {
   getServiceSupabase,
   assertCampaignOwnedBy,
@@ -9,10 +9,11 @@ import {
 } from "@mailpilot/server-core";
 import { requireAuth } from "@/lib/auth";
 import { ok, fail, failInternal } from "@/lib/api/responses";
+import { triggerPipeline } from "@/lib/pipeline";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const user = await requireAuth();
     const form = await req.formData();
@@ -22,7 +23,6 @@ export async function POST(req: Request) {
     await assertCampaignOwnedBy(campaignId, user.id);
 
     const bytes = new Uint8Array(await file.arrayBuffer());
-    // Infer MIME from extension when the browser sends a generic type.
     const filename = file.name.toLowerCase();
     let mime = file.type || "application/octet-stream";
     if (mime === "application/octet-stream" || mime === "application/x-download") {
@@ -49,33 +49,10 @@ export async function POST(req: Request) {
     }).select("id").single();
     if (error) throw new Error(error.message);
 
-    await audit({
-      actor_id: user.id,
-      action: "import.upload",
-      resource_type: "import",
-      resource_id: importRow.id,
-      campaign_id: campaignId,
-      ticket_id: null,
-      metadata: { filename: file.name, size: bytes.byteLength },
-    });
+    await audit({ actor_id: user.id, action: "import.upload", resource_type: "import", resource_id: importRow.id, campaign_id: campaignId, ticket_id: null, metadata: { filename: file.name, size: bytes.byteLength } });
 
-    // Enqueue a parse job — fire and forget so the serverless function returns
-    // immediately. The worker picks it up from Redis. If Redis is unavailable
-    // the import row stays in "uploaded" status and the worker's recovery sweep
-    // will re-enqueue it on next startup.
-    void (async () => {
-      try {
-        const { enqueueIdempotent, QUEUE_NAMES } = await import("@mailpilot/server-core");
-        await enqueueIdempotent(
-          QUEUE_NAMES.imports,
-          "parse",
-          { importId: importRow.id },
-          `parse-${importRow.id}`,
-        );
-      } catch (e) {
-        console.error("[imports] enqueue failed (worker will recover):", (e as Error).message);
-      }
-    })();
+    // Trigger the import pipeline step (non-blocking).
+    triggerPipeline({ job: "import", importId: importRow.id }, req.url);
 
     return ok({ id: importRow.id });
   } catch (e) {

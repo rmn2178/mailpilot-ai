@@ -17,7 +17,9 @@
     "./documents": "./src/documents/index.ts",
     "./workflow": "./src/workflow/index.ts",
     "./validation": "./src/validation/index.ts",
-    "./credentials": "./src/credentials/index.ts"
+    "./credentials": "./src/credentials/index.ts",
+    "./queues": "./src/queues.ts",
+    "./pipeline": "./src/pipeline/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

@@ -1,4 +1,3 @@
-// Re-export from server-core to keep a single source of truth.
 export {
   getRedisConnection,
   QUEUE_NAMES,
@@ -7,4 +6,4 @@ export {
   enqueueIdempotent,
   enqueue,
   DEFAULT_JOB_OPTIONS,
-} from "@mailpilot/server-core";
+} from "@mailpilot/server-core/queues";

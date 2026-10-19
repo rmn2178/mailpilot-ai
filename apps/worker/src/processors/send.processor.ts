@@ -91,7 +91,7 @@ export async function processSend(job: Job<{ ticketId: string; ownerId: string; 
     }
     next.setHours(permitted.start, 0, 0, 0);
     const delayMs = Math.max(60_000, next.getTime() - now.getTime());
-    const { getQueue, QUEUE_NAMES } = await import("@mailpilot/server-core");
+    const { getQueue, QUEUE_NAMES } = await import("@mailpilot/server-core/queues");
     const q = getQueue(QUEUE_NAMES.delivery);
     await q.add(
       "send",

@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getServiceSupabase, assertCampaignOwnedBy, audit } from "@mailpilot/server-core";
 import { requireAuth } from "@/lib/auth";
 import { ok, fail, failInternal } from "@/lib/api/responses";
+import { triggerPipeline } from "@/lib/pipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
  * `import_preview`.
  */
 export async function GET(
-  _req: Request,
+  req: NextRequest,
   ctx: { params: Promise<{ importId: string }> },
 ) {
   try {
@@ -29,15 +30,7 @@ export async function GET(
     // If the import is still in `uploaded` status, the worker hasn't picked
     // it up yet. Try to enqueue a parse job — idempotent on the import id.
     if (imp.status === "uploaded") {
-      const { enqueueIdempotent, QUEUE_NAMES } = await import("@mailpilot/server-core");
-      await enqueueIdempotent(
-        QUEUE_NAMES.imports,
-        "parse",
-        { importId },
-        `parse-${importId}`,
-      ).catch(() => {
-        // Redis may be down — surface to the client.
-      });
+      triggerPipeline({ job: "import", importId }, req.url);
       return ok({ import: imp, status: "parsing_started", rows: [] });
     }
 

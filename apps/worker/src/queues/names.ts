@@ -1,5 +1,4 @@
-// Re-export from server-core so the worker and web app share a single source of truth.
-import { QUEUE_NAMES } from "@mailpilot/server-core";
+import { QUEUE_NAMES } from "@mailpilot/server-core/queues";
 
 export {
   QUEUE_NAMES,
@@ -8,6 +7,6 @@ export {
   enqueueIdempotent,
   enqueue,
   DEFAULT_JOB_OPTIONS,
-} from "@mailpilot/server-core";
+} from "@mailpilot/server-core/queues";
 
 export const ALL_QUEUE_NAMES: readonly string[] = Object.values(QUEUE_NAMES);

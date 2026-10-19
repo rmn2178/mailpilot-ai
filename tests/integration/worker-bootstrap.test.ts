@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -49,7 +49,7 @@ describe("worker bootstrap", () => {
 
         // Spawn `tsx` to evaluate just the imports of the worker entry.
         // We don't run the actual worker (it would block); instead we import
-        // the index module's first few lines via a tiny inline script.
+        const workerUrl = pathToFileURL(path.join(REPO_ROOT, "apps/worker/src/index.ts")).href;
         const child = spawn(
           process.execPath,
           [
@@ -60,7 +60,7 @@ describe("worker bootstrap", () => {
               // Force eager evaluation of the server-core import graph.
               // If 'server-only' throws, this Promise rejects.
               Promise.resolve()
-                .then(() => import(${JSON.stringify(path.join(REPO_ROOT, "apps/worker/src/index.ts"))}))
+                .then(() => import(${JSON.stringify(workerUrl)}))
                 .then(() => { console.log("IMPORTS_OK"); process.exit(0); })
                 .catch((e) => { console.error("IMPORTS_FAIL:", e.message); process.exit(1); });
               // Hard timeout in case the import hangs.
