@@ -15,7 +15,8 @@ let connection: IORedis | null = null;
 export function getRedisConnection(): IORedis {
   if (connection) return connection;
   const env = loadEnv();
-  connection = new IORedis(env.REDIS_URL, {
+  const redisUrl = env.REDIS_URL ?? "redis://localhost:6379";
+  connection = new IORedis(redisUrl, {
     maxRetriesPerRequest: null, // required by BullMQ
     enableReadyCheck: true,
     lazyConnect: false,
