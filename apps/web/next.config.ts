@@ -22,7 +22,6 @@ const config: NextConfig = {
 
   // Security: never expose server-only env to the browser bundle.
   // Only NEXT_PUBLIC_* vars are inlined automatically.
-  // Last updated: 2026-10-19
 };
 
 export default config;
