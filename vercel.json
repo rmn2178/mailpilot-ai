@@ -1,6 +1,5 @@
 {
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter @mailpilot/web build",
-  "outputDirectory": "apps/web/.next",
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter @mailpilot/web build",
   "framework": "nextjs"
 }
